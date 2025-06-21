@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Current Affairs Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS Variables for Themes based on new palette */
+        :root {
+            /* Light Theme */
+            --main-bg: #F9FAFB;
+            --main-bg-start: #e0f2f7; /* Lighter blue for gradient start */
+            --main-bg-end: #f0f9ff;   /* Even lighter blue for gradient end */
+            --card-bg: #FFFFFF;
+            --info-box-bg: #FEF9C3;
+            --info-box-border: #FACC15; /* Yellow for left border */
+            --question-box-bg: #DBEAFE;
+            --primary-accent-blue: #3B82F6;
+            --primary-accent-blue-hover: #2563EB;
+            --secondary-accent-green-start: #10B981;
+            --secondary-accent-green-end: #059669; /* Darker green for gradient */
+            --secondary-accent-green-hover-start: #0d8a63; /* Slightly darker hover */
+            --secondary-accent-green-hover-end: #047857; /* Slightly darker hover */
+            --warning-accent: #F59E0B; /* Used explicitly for warning, but feedback uses specific red/green */
+            --text-color: #1F2937;
+            --secondary-text-color: #6B7280;
+            --card-shadow-color: rgba(0, 0, 0, 0.05);
+            --button-shadow-color: rgba(0, 0, 0, 0.1);
+            --button-hover-shadow-color: rgba(0, 0, 0, 0.15);
+            --button-active-shadow-color: rgba(0, 0, 0, 0.08);
+            --spinner-color: #3B82F6;
+            --score-badge-bg: #D1FAE5;
+            --score-badge-text: #065F46;
+            --feedback-correct-color: #059669; /* Darker green for correct feedback */
+            --feedback-incorrect-color: #DC2626; /* Red for incorrect feedback */
+
+            /* Light theme specific glows */
+            --question-box-glow: 0 0 15px rgba(59, 130, 246, 0.3); /* Soft blue shadow for light theme */
+            --quiz-container-border-glow: none;
+            --button-glow-color: rgba(16, 185, 129, 0.5); /* Green glow for light theme buttons */
+            --theme-toggle-color: #4B5563; /* Darker gray for light theme icon */
+            --title-glow-color: rgba(59, 130, 246, 0.5); /* Blue glow for title in light theme */
+            --border-glow-color: rgba(59, 130, 246, 0.5); /* Blue glow for border in light theme */
+            --bubble-color: rgba(173, 216, 230, 0.5); /* Light blue, increased transparency for light theme */
+        }
+
+        /* Dark Theme overrides (adapting previous dark theme with new accents) */
+        html[data-theme="dark"] {
+            --main-bg: #0d0f14;
+            --main-bg-start: #1a222c; /* Darker blue-gray for gradient start */
+            --main-bg-end: #0d0f14;   /* Even darker for gradient end */
+            --card-bg: #12151a;
+            --info-box-bg: #333d4f; /* Dark equivalent of yellow */
+            --info-box-border: #007bff; /* Dark theme glow border color */
+            --question-box-bg: #1c222d;
+            --primary-accent-blue: #00aaff; /* Dark theme blue */
+            --primary-accent-blue-hover: #0088cc;
+            --secondary-accent-green-start: #00aaff; /* Dark theme CTA */
+            --secondary-accent-green-end: #0088cc;
+            --secondary-accent-green-hover-start: #0077bb;
+            --secondary-accent-green-hover-end: #0066aa;
+            --warning-accent: #F59E0B; /* Keep warning same or adjust for dark contrast */
+            --text-color: #ffffff;
+            --secondary-text-color: #e0e0e0;
+            --card-shadow-color: rgba(0, 0, 0, 0.5); /* More pronounced dark shadow */
+            --button-shadow-color: rgba(0, 0, 0, 0.5);
+            --button-hover-shadow-color: rgba(0, 0, 0, 0.6);
+            --button-active-shadow-color: rgba(0, 0, 0, 0.4);
+            --spinner-color: #00aaff;
+            --score-badge-bg: #1a273b; /* Darker background for score */
+            --score-badge-text: #e0e0e0; /* Lighter text for score */
+            --feedback-correct-color: #5cb85c;
+            --feedback-incorrect-color: #F59E0B; /* Changed to Warning Accent for dark theme incorrect */
+
+            /* Dark theme specific glows */
+            --question-box-glow: none;
+            --quiz-container-border-glow: 2px solid var(--info-box-border);
+            --button-glow-color: rgba(0, 170, 255, 0.5); /* Blue glow for dark theme buttons */
+            --theme-toggle-color: #a0aec0; /* Lighter gray for dark theme icon */
+            --title-glow-color: rgba(0, 170, 255, 0.5); /* Blue glow for title in dark theme */
+            --border-glow-color: rgba(0, 170, 255, 0.5); /* Blue glow for border in dark theme */
+            --bubble-color: rgba(64, 164, 223, 0.4); /* Darker blue, increased transparency for dark theme */
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); } /* Reduced Y transform */
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(18px); } /* Reduced Y transform */
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 var(--button-glow-color); }
+            70% { box-shadow: 0 0 0 6px rgba(0, 0, 0, 0); } /* Reduced pulse size */
+            100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+        }
+
+        /* New pulse for text-shadow/title glow */
+        @keyframes text-pulse {
+            0% { text-shadow: 0 0 0px var(--title-glow-color); }
+            70% { text-shadow: 0 0 8px var(--title-glow-color); }
+            100% { text-shadow: 0 0 0px var(--title-glow-color); }
+        }
+
+        /* New animation for glowing border */
+        @keyframes border-glow-animation {
+            0% { box-shadow: 0 0 0px var(--border-glow-color); }
+            50% { box-shadow: 0 0 15px var(--border-glow-color), 0 0 30px var(--border-glow-color); } /* Stronger glow in middle */
+            100% { box-shadow: 0 0 0px var(--border-glow-color); }
+        }
+
+        @keyframes backgroundPan {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        /* New animation for background bubbles */
+        @keyframes bubble-float {
+            0% {
+                transform: translateY(0) translateX(0) scale(0.2);
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateY(-120vh) translateX(var(--bubble-drift)) scale(var(--bubble-scale));
+                opacity: 0;
+            }
+        }
+
+        /* Bubble container for fixed positioning */
+        .bubble-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicks to pass through */
+            overflow: hidden; /* Ensures bubbles don't exceed screen */
+            z-index: -1; /* Puts bubbles behind other content */
+        }
+
+        /* Individual bubble styling */
+        .bubble {
+            position: absolute;
+            bottom: -10%; /* Start below the viewport */
+            border-radius: 50%;
+            background-color: var(--bubble-color);
+            filter: blur(2px); /* Soft blur effect */
+            animation: bubble-float linear infinite;
+        }
+
+        /* Base styles using CSS variables */
+        body {
+            font-family: 'Inter', sans-serif;
+            font-size: 10px; /* Base font size reduced by approx 40% from 16px to 10px */
+            background: linear-gradient(270deg, var(--main-bg-start), var(--main-bg-end));
+            background-size: 200% 200%;
+            animation: backgroundPan 15s ease infinite; /* Slow background animation */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 12px; /* Reduced padding */
+            box-sizing: border-box;
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            line-height: 1.6; /* Medium line spacing - kept for readability */
+            overflow: hidden; /* Prevent scrollbars due to bubbles */
+        }
+        .quiz-container {
+            background-color: var(--card-bg);
+            border-radius: 0.6rem; /* scaled from 1rem */
+            box-shadow: 0 6px 12px var(--card-shadow-color); /* scaled from 0 10px 20px */
+            padding: 1.2rem; /* scaled from 2rem */
+            max-width: 460px; /* scaled from 768px */
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* scaled from 25px */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
+            /* Removed direct border as we are using animated box-shadow now */
+            animation: fadeIn 0.8s ease-out forwards, border-glow-animation 3s infinite alternate; /* Added border glow animation */
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px; /* scaled from 20px */
+        }
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.1rem; /* scaled from 1.8rem */
+            cursor: pointer;
+            color: var(--theme-toggle-color); /* Use specific theme toggle color */
+            transition: color 0.3s ease, transform 0.2s ease;
+            padding: 3px; /* scaled from 5px */
+            border-radius: 50%;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.2) rotate(15deg); /* Kept same as it's a visual effect */
+        }
+        .quiz-title {
+            color: var(--text-color);
+            font-size: 1.4rem; /* scaled from 2.25rem */
+            font-weight: 800; /* Extra bold */
+            letter-spacing: -0.025em; /* Tighten letter spacing */
+            text-shadow: 1px 1px 2px var(--primary-accent-blue); /* Adjusted for highlight */
+            animation: text-pulse 2s infinite alternate; /* Added for continuous glow */
+        }
+        .score-display {
+            background-color: var(--score-badge-bg);
+            color: var(--score-badge-text);
+            padding: 0.3rem 0.75rem; /* scaled from 0.5rem 1.25rem */
+            border-radius: 9999px; /* Fully rounded pill */
+            font-size: 0.7rem; /* scaled from 1.15rem */
+            font-weight: 700;
+            margin-bottom: 12px; /* scaled from 20px */
+            align-self: flex-end; /* Positioned below header, aligned right */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* scaled from 0 4px 8px */
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.1s ease-out;
+        }
+        .score-display.updated {
+            animation: popIn 0.3s ease-out; /* Pop animation on update */
+        }
+        @media (max-width: 600px) { /* Adjust breakpoint or scale down the effect within */
+            .score-display {
+                align-self: center; /* Center on small screens */
+            }
+            .quiz-title {
+                font-size: 1.2rem; /* scaled from 1.75rem */
+                text-align: center;
+            }
+            .header {
+                flex-direction: column;
+                gap: 9px; /* scaled from 15px */
+            }
+            .quiz-container {
+                padding: 0.9rem; /* scaled from 1.5rem */
+            }
+        }
+        .question-box {
+            background-color: var(--question-box-bg);
+            border-radius: 9px; /* scaled from 15px */
+            padding: 18px; /* scaled from 30px */
+            font-size: 0.85rem; /* scaled from 1.4rem */
+            color: var(--text-color);
+            min-height: 72px; /* scaled from 120px */
+            display: flex;
+            flex-direction: column; /* Allow vertical stacking of languages */
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            word-break: break-word;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: var(--question-box-glow); /* Soft blue shadow for light theme */
+            animation: pulse 2s infinite; /* Added for continuous glow */
+        }
+        .question-box .odia-text {
+            font-size: 1.2em; /* Make Odia text larger */
+            margin-bottom: 5px; /* Small space between Odia and English */
+        }
+        .question-box .english-text {
+            font-size: 0.8em; /* Make English text smaller */
+            text-decoration: underline; /* Underline English text */
+            color: var(--secondary-text-color); /* Slightly subdued color for English */
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* scaled from 200px */
+            gap: 9px; /* scaled from 15px */
+            max-width: 360px; /* scaled from 600px */
+            margin: 0 auto; /* Center the grid */
+        }
+
+        .option-button {
+            background-color: var(--primary-accent-blue);
+            color: white;
+            padding: 11px 15px; /* scaled from 18px 25px */
+            border-radius: 7px; /* scaled from 12px */
+            border: none;
+            cursor: pointer;
+            font-size: 0.7rem; /* scaled from 1.15rem */
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 3px 7px var(--button-shadow-color); /* scaled from 0 5px 12px */
+            animation: slideInUp 0.5s ease-out forwards; /* Increased duration for smoother feel */
+        }
+        .option-button:nth-child(2) { animation-delay: 0.08s; } /* Adjusted stagger delay */
+        .option-button:nth-child(3) { animation-delay: 0.16s; } /* Adjusted stagger delay */
+        .option-button:nth-child(4) { animation-delay: 0.24s; } /* Adjusted stagger delay */
+
+        .option-button:hover {
+            background-color: var(--primary-accent-blue-hover);
+            transform: scale(1.03) translateY(-2px); /* Scaled translateY */
+            box-shadow: 0 5px 9px var(--button-hover-shadow-color); /* Scaled shadow increase */
+        }
+        .option-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px var(--button-active-shadow-color); /* Scaled shadow */
+        }
+
+        .generate-button {
+            background-image: linear-gradient(to right, var(--secondary-accent-green-start), var(--secondary-accent-green-end));
+            color: white;
+            padding: 11px 21px; /* scaled from 18px 35px */
+            border-radius: 7px; /* scaled from 12px */
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem; /* scaled from 1.3rem */
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 9px var(--button-glow-color), 0 4px 9px rgba(0, 0, 0, 0.15); /* scaled */
+        }
+        .generate-button:hover {
+            background-image: linear-gradient(to right, var(--secondary-accent-green-hover-start), var(--secondary-accent-green-hover-end));
+            transform: translateY(-2px) scale(1.03); /* scaled translateY */
+            box-shadow: 0 0 18px var(--button-glow-color), 0 7px 15px rgba(0, 0, 0, 0.3); /* scaled */
+        }
+        .generate-button:active {
+            transform: translateY(0);
+            box-shadow: 0 0 5px var(--button-glow-color), 0 2px 5px rgba(0, 0, 0, 0.1); /* scaled */
+        }
+
+        .feedback-message {
+            margin-top: 9px; /* scaled from 15px */
+            font-size: 0.7rem; /* scaled from 1.15rem */
+            font-weight: 600;
+            color: var(--feedback-correct-color);
+            transition: color 0.3s ease, transform 0.2s ease;
+            animation: fadeIn 0.4s ease-out forwards; /* Fade in feedback */
+        }
+        .correct {
+            color: var(--feedback-correct-color);
+        }
+        .incorrect {
+            color: var(--feedback-incorrect-color);
+        }
+        .hidden {
+            display: none;
+        }
+        .loading-spinner {
+            border: 3px solid rgba(243, 243, 243, 0.3); /* scaled from 5px */
+            border-top: 3px solid var(--spinner-color); /* scaled from 5px */
+            border-radius: 50%;
+            width: 24px; /* scaled from 40px */
+            height: 24px; /* scaled from 40px */
+            animation: spin 1s linear infinite;
+            margin: 15px auto; /* scaled from 25px */
+            transition: border-top-color 0.3s ease;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Fade animation for question changes (retained and enhanced) */
+        .fade-out-in-container {
+            opacity: 0;
+            transition: opacity 0.4s ease-out; /* Slower fade out */
+        }
+        .fade-in-container {
+            opacity: 1;
+            transition: opacity 0.4s ease-in; /* Slower fade in */
+        }
+        /* Specific animations for content elements during question change */
+        .question-content-fade {
+            animation: slideInUp 0.6s ease-out forwards;
+        }
+
+        /* General styles for disabled state */
+        button:disabled, .option-button.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+            background-image: none !important; /* Override gradient for disabled */
+            background-color: var(--secondary-text-color) !important; /* Gray out disabled buttons */
+        }
+    </style>
+</head>
+<body>
+    <!-- Audio Elements for local sounds -->
+    <audio id="background-music" loop>
+        <source src="background.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="click-sound">
+        <source src="click.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="generate-question-sound">
+        <source src="question.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="correct-sound">
+        <source src="correct.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="wrong-sound">
+        <source src="wrong.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Bubble Container for background animation -->
+    <div id="bubble-container" class="bubble-container"></div>
+
+    <div class="quiz-container" id="quiz-container-main">
+        <div class="header">
+            <h1 class="quiz-title">AI-Current Affairs Quiz</h1>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+        
+        <div class="score-display" id="score-display-element">Score: <span id="score">0</span> / Questions Answered: <span id="questions-answered">0</span></div>
+
+        <div class="loading-spinner hidden" id="loading-spinner" aria-label="Loading new question"></div>
+        <!-- The question-language-info div is removed as per the snip -->
+        <div class="question-box" id="question-text">Click 'Generate New Question' to start!</div>
+
+        <div class="options-grid" id="options-container">
+            </div>
+
+        <div id="feedback" class="feedback-message"></div>
+
+        <button id="generate-question-button" class="generate-button">Generate New Question</button>
+    </div>
+
+    <script>
+        let score = 0;
+        let questionsAnswered = 0;
+        let currentQuestion = null; // Store the currently displayed AI-generated question
+        let audioInitialized = false;
+
+        // Get DOM elements
+        const quizContainer = document.getElementById('quiz-container-main');
+        const questionTextElement = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackElement = document.getElementById('feedback');
+        const generateButton = document.getElementById('generate-question-button');
+        const scoreDisplay = document.getElementById('score');
+        const questionsAnsweredDisplay = document.getElementById('questions-answered');
+        // const questionLanguageInfo = document.getElementById('question-language-info'); // Removed
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement; // Get the root html element
+        const scoreDisplayElement = document.getElementById('score-display-element');
+        const bubbleContainer = document.getElementById('bubble-container');
+
+        // Get audio elements (updated paths)
+        const backgroundMusic = document.getElementById('background-music');
+        const clickSound = document.getElementById('click-sound');
+        const generateQuestionSound = document.getElementById('generate-question-sound'); 
+        const correctSound = document.getElementById('correct-sound');
+        const wrongSound = document.getElementById('wrong-sound');
+
+        // Function to initialize audio (play background music)
+        function initializeAudio() {
+            if (audioInitialized) return; // Prevent re-initialization
+            
+            // Attempt to play background music. Browsers often require user interaction.
+            // This will likely be triggered by the first 'generate question' button click.
+            backgroundMusic.play().then(() => {
+                console.log("Background music started.");
+                audioInitialized = true;
+            }).catch(e => {
+                console.warn("Autoplay prevented:", e);
+                // If autoplay is prevented, flag it, but the user interaction will eventually enable it
+                audioInitialized = true; // Still consider initialized so sound effects can work
+            });
+        }
+
+        // Function to play sound effects
+        function playSound(audioElement) {
+            if (audioElement && audioInitialized) {
+                audioElement.currentTime = 0; // Rewind to start for quick successive plays
+                audioElement.play().catch(e => console.error("Error playing sound:", e));
+            }
+        }
+
+        // Function to set the theme
+        function setTheme(theme) {
+            htmlElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme); // Save preference
+            // Update toggle icon
+            if (theme === 'dark') {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>'; // Sun icon for dark mode
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>'; // Moon icon for light mode
+            }
+        }
+
+        // Function to toggle the theme
+        function toggleTheme() {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        }
+
+        // Function to display an AI-generated question with fade and slide animations
+        function displayQuestion(q) {
+            // Apply fade-out class to main content before updating
+            quizContainer.classList.remove('fade-in-container');
+            quizContainer.classList.add('fade-out-in-container');
+
+            setTimeout(() => {
+                currentQuestion = q; // Store the new question
+
+                // Reset UI for new question
+                feedbackElement.textContent = '';
+                feedbackElement.classList.remove('correct', 'incorrect');
+                optionsContainer.innerHTML = ''; // Clear previous options
+                generateButton.textContent = 'Generate New Question'; // Reset button text
+                generateButton.disabled = false; // Enable button
+
+                // Update question display with both Odia and English
+                questionTextElement.innerHTML = `
+                    <span class="odia-text">${q.question_odia}</span>
+                    <span class="english-text">${q.question_english}</span>
+                `;
+                scoreDisplay.textContent = score;
+                questionsAnsweredDisplay.textContent = questionsAnswered;
+
+                // Apply slide-in animation to question elements
+                questionTextElement.classList.add('question-content-fade');
+
+                // Create and append option buttons with staggered animation (using Odia options)
+                q.options_odia.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.classList.add('option-button');
+                    // Stagger animation for options
+                    button.style.animationDelay = `${0.08 * index}s`; // Staggered by 80ms for smoother feel
+                    button.addEventListener('click', () => {
+                        playSound(clickSound); // Play click sound for options
+                        selectOption(button, option, q.answer_odia); // Use Odia answer for checking
+                    });
+                    optionsContainer.appendChild(button);
+                });
+
+                // Re-apply fade-in class after content is updated
+                quizContainer.classList.remove('fade-out-in-container');
+                quizContainer.classList.add('fade-in-container');
+
+                // Remove question-content-fade class after animation completes for next update
+                setTimeout(() => {
+                    questionTextElement.classList.remove('question-content-fade');
+                }, 600); // Should match or be slightly longer than slideInUp duration
+            }, 400); // Duration matches CSS transition for fade-out-in-container
+        }
+
+
+        // Function to handle option selection
+        function selectOption(button, option, correctAnswer) {
+            // Disable all option buttons after selection
+            Array.from(optionsContainer.children).forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('disabled'); // Add disabled class for styling
+            });
+
+            if (option === correctAnswer) {
+                playSound(correctSound); // Play correct sound
+                feedbackElement.textContent = 'Correct!';
+                feedbackElement.classList.add('correct');
+                score++;
+                // Add pop animation to score display
+                scoreDisplayElement.classList.add('popIn');
+                setTimeout(() => {
+                    scoreDisplayElement.classList.remove('popIn');
+                }, 300); // Remove class after animation
+            } else {
+                playSound(wrongSound); // Play wrong sound
+                feedbackElement.textContent = `Incorrect! The correct answer was "${correctAnswer}".`;
+                feedbackElement.classList.add('incorrect');
+                // Highlight the correct answer if incorrect option was chosen
+                Array.from(optionsContainer.children).forEach(btn => {
+                    if (btn.textContent === correctAnswer) {
+                        btn.style.borderColor = 'var(--feedback-correct-color)';
+                        btn.style.boxShadow = `0 0 10px var(--feedback-correct-color)`;
+                        btn.style.outline = `2px solid var(--feedback-correct-color)`;
+                        btn.style.backgroundColor = 'rgba(5, 150, 105, 0.2)'; // Subtle correct background
+                    }
+                });
+            }
+            questionsAnswered++; // Increment answered count
+            scoreDisplay.textContent = score; // Update score immediately
+            questionsAnsweredDisplay.textContent = questionsAnswered;
+        }
+
+        // Function to call the Gemini API and get a new question
+        async function generateNewQuestion() {
+            // Initialize audio on first interaction
+            initializeAudio();
+            playSound(generateQuestionSound); // Play generate question sound immediately
+
+            // Show loading spinner and disable button
+            loadingSpinner.classList.remove('hidden');
+            generateButton.disabled = true;
+            generateButton.textContent = 'Generating...';
+
+            // Clear previous question and options for immediate feedback
+            // questionLanguageInfo.textContent = ''; // Removed
+            questionTextElement.innerHTML = ''; // Clear content
+            optionsContainer.innerHTML = '';
+            feedbackElement.textContent = '';
+            feedbackElement.classList.remove('correct', 'incorrect'); // Clear previous feedback styling
+
+            try {
+                // Construct the prompt for the Gemini API to get questions in both Odia and English
+                const prompt = `Generate a multiple-choice current affairs quiz question for 2025 based on a recent or projected major global, Indian, or Odisha event, using reputable news sources.
+                Provide the question, 4 plausible multiple-choice options, and the correct answer in BOTH Odia and English.
+                The options displayed to the user should be in Odia.
+                
+                Return the response as a JSON object with the following structure:
+                {
+                  "question_odia": "The current affairs question in Odia.",
+                  "question_english": "The current affairs question in English.",
+                  "options_odia": ["option1_odia", "option2_odia", "option3_odia", "option4_odia"],
+                  "options_english": ["option1_english", "option2_english", "option3_english", "option4_english"],
+                  "answer_odia": "The correct answer from options_odia.",
+                  "answer_english": "The correct answer from options_english."
+                }
+                
+                Ensure the generated questions and options are clear and unambiguous for current affairs.`;
+
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = {
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "question_odia": { "type": "STRING" },
+                                "question_english": { "type": "STRING" },
+                                "options_odia": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "options_english": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "answer_odia": { "type": "STRING" },
+                                "answer_english": { "type": "STRING" }
+                            },
+                            required: ["question_odia", "question_english", "options_odia", "options_english", "answer_odia", "answer_english"]
+                        }
+                    }
+                };
+
+                const apiKey = "AIzaSyBboUkd3gq2Yy7deAd9W9s-HQUgcrjO2WQ"; // Canvas will automatically provide the API key
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorBody = await response.json();
+                    throw new Error(`API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorBody)}`);
+                }
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const jsonString = result.candidates[0].content.parts[0].text;
+                    const generatedQuestion = JSON.parse(jsonString);
+
+                    // Validate the generated question structure
+                    if (generatedQuestion.question_odia && generatedQuestion.question_english &&
+                        Array.isArray(generatedQuestion.options_odia) && generatedQuestion.options_odia.length === 4 &&
+                        Array.isArray(generatedQuestion.options_english) && generatedQuestion.options_english.length === 4 &&
+                        generatedQuestion.answer_odia && generatedQuestion.answer_english) {
+                        displayQuestion(generatedQuestion);
+                    } else {
+                        throw new Error("Invalid structure for generated question.");
+                    }
+                } else {
+                    throw new Error("No content received from AI.");
+                }
+            } catch (error) {
+                console.error("Error generating question:", error);
+                feedbackElement.textContent = `Error generating question. Please try again. (${error.message})`;
+                feedbackElement.classList.add('incorrect');
+                questionTextElement.textContent = 'Could not generate question.';
+                // questionLanguageInfo.textContent = ''; // Removed
+            } finally {
+                // Hide loading spinner and enable button
+                loadingSpinner.classList.add('hidden');
+                generateButton.disabled = false;
+                generateButton.textContent = 'Generate New Question';
+            }
+        }
+
+        // Function to create and animate a single bubble
+        function createBubble() {
+            const bubble = document.createElement('span');
+            bubble.classList.add('bubble');
+
+            const size = Math.random() * (60 - 20) + 20; // Size between 20px and 60px
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+
+            const left = Math.random() * 100; // Random horizontal position 0-100%
+            bubble.style.left = `${left}%`;
+
+            const animationDuration = Math.random() * (20 - 10) + 10; // Duration between 10s and 20s
+            bubble.style.animationDuration = `${animationDuration}s`;
+
+            const animationDelay = Math.random() * -animationDuration; // Negative delay for staggered start
+            bubble.style.setProperty('--bubble-drift', `${drift}px`);
+
+            const finalScale = Math.random() * (1.5 - 0.5) + 0.5; // Final scale 0.5 to 1.5
+            bubble.style.setProperty('--bubble-scale', finalScale);
+
+            bubbleContainer.appendChild(bubble);
+
+            // Remove bubble after animation to prevent excessive DOM elements
+            bubble.addEventListener('animationend', () => {
+                bubble.remove();
+                // Re-create a new bubble to maintain constant count
+                createBubble();
+            });
+        }
+
+
+        // Event listener for the generate question button
+        generateButton.addEventListener('click', generateNewQuestion);
+
+        // Initial setup on window load
+        window.onload = () => {
+            // Load theme from localStorage
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                setTheme(savedTheme);
+            } else {
+                // Set default theme if no preference is found
+                setTheme('light');
+            }
+
+            // Add event listener for theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+
+            // Initial creation of bubbles
+            const numberOfBubbles = 50; // Increased number of bubbles
+            for (let i = 0; i < numberOfBubbles; i++) {
+                createBubble();
+            }
+        };
+    </script>
+</body>
+</html>
