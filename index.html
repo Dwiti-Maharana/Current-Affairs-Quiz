@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Current Affairs Quiz</title>
+    <title>Odia-Viral GK</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -44,7 +44,7 @@
             --theme-toggle-color: #4B5563; /* Darker gray for light theme icon */
             --title-glow-color: rgba(59, 130, 246, 0.5); /* Blue glow for title in light theme */
             --border-glow-color: rgba(59, 130, 246, 0.5); /* Blue glow for border in light theme */
-            --bubble-color: rgba(173, 216, 230, 0.9); /* Light blue, increased transparency for light theme */
+            --bubble-color: rgba(173, 216, 230,); /* Light blue, increased transparency for light theme */
         }
 
         /* Dark Theme overrides (adapting previous dark theme with new accents) */
@@ -82,7 +82,7 @@
             --theme-toggle-color: #a0aec0; /* Lighter gray for dark theme icon */
             --title-glow-color: rgba(0, 170, 255, 0.5); /* Blue glow for title in dark theme */
             --border-glow-color: rgba(0, 170, 255, 0.5); /* Blue glow for border in dark theme */
-            --bubble-color: rgba(64, 164, 223, 0.7); /* Darker blue, increased transparency for dark theme */
+            --bubble-color: rgb(255, 255, 255); /* Darker blue, increased transparency for dark theme */
         }
 
         /* Animations */
@@ -158,7 +158,7 @@
             bottom: -10%; /* Start below the viewport */
             border-radius: 50%;
             background-color: var(--bubble-color);
-            filter: blur(1px); /* Slightly reduced blur effect */
+            filter: blur(2px); /* Slightly reduced blur effect */
             animation: bubble-float linear infinite;
         }
 
@@ -202,7 +202,7 @@
             align-items: center;
             margin-bottom: 12px; /* scaled from 20px */
         }
-        .theme-toggle {
+        .theme-toggle, .volume-toggle-button { /* Added volume-toggle-button style */
             background: none;
             border: none;
             font-size: 1.1rem; /* scaled from 1.8rem */
@@ -212,7 +212,7 @@
             padding: 3px; /* scaled from 5px */
             border-radius: 50%;
         }
-        .theme-toggle:hover {
+        .theme-toggle:hover, .volume-toggle-button:hover {
             transform: scale(1.2) rotate(15deg); /* Kept same as it's a visual effect */
         }
         .quiz-title {
@@ -272,8 +272,10 @@
             animation: pulse 2s infinite; /* Added for continuous glow */
         }
         .question-box .odia-text {
-            font-size: 1.2em; /* Make Odia text larger */
+            font-size: 1.4em; /* Increased Odia font size */
+            font-weight: 700; /* Made Odia text bolder */
             margin-bottom: 5px; /* Small space between Odia and English */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* Subtle text shadow */
         }
         .question-box .english-text {
             font-size: 0.8em; /* Make English text smaller */
@@ -291,13 +293,13 @@
 
         .option-button {
             background-color: var(--primary-accent-blue);
-            color: white;
+            color: rgb(20, 16, 16); /* Changed font color to white */
             padding: 11px 15px; /* scaled from 18px 25px */
             border-radius: 7px; /* scaled from 12px */
             border: none;
             cursor: pointer;
-            font-size: 0.7rem; /* scaled from 1.15rem */
-            font-weight: 600;
+            font-size: 0.85rem; /* Increased font size for options */
+            font-weight: 700; /* Made options text bolder */
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 3px 7px var(--button-shadow-color); /* scaled from 0 5px 12px */
             animation: slideInUp 0.5s ease-out forwards; /* Increased duration for smoother feel */
@@ -393,6 +395,80 @@
             background-image: none !important; /* Override gradient for disabled */
             background-color: var(--secondary-text-color) !important; /* Gray out disabled buttons */
         }
+
+        /* Volume Controls Specific Styling */
+        .volume-controls {
+            display: flex;
+            flex-direction: column; /* Stack sliders vertically */
+            gap: 10px; /* Spacing between slider groups */
+            margin-top: 15px; /* Space above volume controls */
+            align-items: center; /* Center the control groups */
+            width: 100%; /* Ensure it takes full width of container */
+        }
+
+        .volume-slider-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 90%; /* Adjust width for sliders */
+            max-width: 300px; /* Max width for consistency */
+        }
+
+        .volume-slider-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--secondary-text-color);
+            flex-shrink: 0; /* Prevent label from shrinking */
+        }
+
+        .volume-slider {
+            flex-grow: 1; /* Allow slider to take available space */
+            -webkit-appearance: none; /* Override default appearance */
+            appearance: none;
+            height: 8px; /* Height of the slider track */
+            background: var(--primary-accent-blue); /* Color of the track */
+            border-radius: 4px;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity .2s;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px; /* Size of the slider handle */
+            height: 18px; /* Size of the slider handle */
+            border-radius: 50%;
+            background: var(--secondary-accent-green-start); /* Color of the handle */
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            border: 2px solid white; /* White border for thumb */
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--secondary-accent-green-start);
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            border: 2px solid white;
+        }
+
+        .volume-percentage {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-color);
+            min-width: 35px; /* Ensure space for percentage */
+            text-align: right;
+        }
+
+        /* Flex container for header buttons */
+        .header-buttons {
+            display: flex;
+            gap: 10px; /* Space between buttons */
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -428,10 +504,15 @@
 
     <div class="quiz-container" id="quiz-container-main">
         <div class="header">
-            <h1 class="quiz-title">AI-Current Affairs Quiz</h1>
-            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
-                <i class="fas fa-moon"></i>
-            </button>
+            <h1 class="quiz-title">Odia-Viral GK</h1>
+            <div class="header-buttons">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="volume-toggle-button" class="volume-toggle-button" aria-label="Toggle volume controls">
+                    <i class="fas fa-volume-up"></i> <!-- Default to volume-up, implies controls are visible -->
+                </button>
+            </div>
         </div>
         
         <div class="score-display" id="score-display-element">Score: <span id="score">0</span> / Questions Answered: <span id="questions-answered">0</span></div>
@@ -440,11 +521,25 @@
         <div class="question-box" id="question-text">Click 'Generate New Question' to start!</div>
 
         <div class="options-grid" id="options-container">
-            </div>
+        </div>
 
         <div id="feedback" class="feedback-message"></div>
 
         <button id="generate-question-button" class="generate-button">Generate New Question</button>
+
+        <!-- Volume Controller with Sliders -->
+        <div class="volume-controls" id="volume-controls-container">
+            <div class="volume-slider-group">
+                <label for="background-volume-slider">Background Music:</label>
+                <input type="range" id="background-volume-slider" min="0" max="100" value="50" class="volume-slider">
+                <span id="background-volume-percentage" class="volume-percentage">50%</span>
+            </div>
+            <div class="volume-slider-group">
+                <label for="effects-volume-slider">Sound Effects:</label>
+                <input type="range" id="effects-volume-slider" min="0" max="100" value="50" class="volume-slider">
+                <span id="effects-volume-percentage" class="volume-percentage">50%</span>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -452,6 +547,11 @@
         let questionsAnswered = 0;
         let currentQuestion = null; // Store the currently displayed AI-generated question
         let audioInitialized = false;
+        
+        // Initial volume for background and effects
+        let backgroundVolume = 0.5; 
+        let effectsVolume = 0.5;
+        let volumeControlsVisible = true; // Default to visible
 
         // Get DOM elements
         const quizContainer = document.getElementById('quiz-container-main');
@@ -475,6 +575,35 @@
         const wrongSound = document.getElementById('wrong-sound');
         const postGenerateSound = document.getElementById('post-generate-sound'); // New audio element
 
+        // Get volume control elements
+        const backgroundVolumeSlider = document.getElementById('background-volume-slider');
+        const effectsVolumeSlider = document.getElementById('effects-volume-slider');
+        const backgroundVolumePercentage = document.getElementById('background-volume-percentage');
+        const effectsVolumePercentage = document.getElementById('effects-volume-percentage');
+        const volumeToggleButton = document.getElementById('volume-toggle-button');
+        const volumeControlsContainer = document.getElementById('volume-controls-container');
+
+
+        // Array of sound effect audio elements (excluding background music)
+        const soundEffectElements = [
+            clickSound,
+            generateQuestionSound,
+            correctSound,
+            wrongSound,
+            postGenerateSound
+        ];
+
+        // Function to update the volume of all audio elements based on slider values
+        function updateAllVolumes() {
+            backgroundMusic.volume = backgroundVolume;
+            soundEffectElements.forEach(audio => {
+                audio.volume = effectsVolume;
+            });
+            
+            backgroundVolumePercentage.textContent = `${Math.round(backgroundVolume * 100)}%`;
+            effectsVolumePercentage.textContent = `${Math.round(effectsVolume * 100)}%`;
+        }
+
         // Function to initialize audio (play background music)
         function initializeAudio() {
             if (audioInitialized) return; // Prevent re-initialization
@@ -484,10 +613,12 @@
             backgroundMusic.play().then(() => {
                 console.log("Background music started.");
                 audioInitialized = true;
+                updateAllVolumes(); // Apply initial volume after music starts
             }).catch(e => {
                 console.warn("Autoplay prevented:", e);
                 // If autoplay is prevented, flag it, but the user interaction will eventually enable it
                 audioInitialized = true; // Still consider initialized so sound effects can work
+                updateAllVolumes(); // Apply initial volume even if autoplay fails
             });
         }
 
@@ -517,6 +648,20 @@
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             setTheme(newTheme);
         }
+
+        // Function to toggle volume controls visibility
+        function toggleVolumeControls() {
+            volumeControlsVisible = !volumeControlsVisible;
+            if (volumeControlsVisible) {
+                volumeControlsContainer.classList.remove('hidden');
+                volumeToggleButton.innerHTML = '<i class="fas fa-volume-up"></i>'; // Show volume up icon
+            } else {
+                volumeControlsContainer.classList.add('hidden');
+                volumeToggleButton.innerHTML = '<i class="fas fa-volume-mute"></i>'; // Show volume mute icon
+            }
+            localStorage.setItem('volumeControlsVisible', volumeControlsVisible); // Save preference
+        }
+
 
         // Function to display an AI-generated question with fade and slide animations
         function displayQuestion(q) {
@@ -630,7 +775,7 @@
 
             try {
                 // Construct the prompt for the Gemini API to get questions in both Odia and English
-                const prompt = `Generate a multiple-choice current affairs quiz question for 2025 based on a recent or projected major global, Indian, or Odisha event, using reputable news sources.
+                const prompt = `Generate one multiple-choice current affairs quiz question relevant to the year 2025, including important recent or projected events (global, Indian, or Odisha-specific). You may also include significant past events (from recent years) if they remain relevant in 2025. Use only reputable and verifiable news sources for fact accuracy.
                 Provide the question, 4 plausible multiple-choice options, and the correct answer in BOTH Odia and English.
                 The options displayed to the user should be in Odia.
                 
@@ -729,6 +874,10 @@
             bubble.style.animationDuration = `${animationDuration}s`;
 
             const animationDelay = Math.random() * -animationDuration; // Negative delay for staggered start
+            bubble.style.animationDelay = `${animationDelay}s`;
+
+            // Define drift for horizontal movement (random value between -50px and 50px)
+            const drift = Math.random() * 100 - 50;
             bubble.style.setProperty('--bubble-drift', `${drift}px`);
 
             const finalScale = Math.random() * (1.5 - 0.5) + 0.5; // Final scale 0.5 to 1.5
@@ -744,10 +893,23 @@
             });
         }
 
-
         // Event listener for the generate question button
         generateButton.addEventListener('click', generateNewQuestion);
 
+        // Volume slider event listeners
+        backgroundVolumeSlider.addEventListener('input', (event) => {
+            backgroundVolume = event.target.value / 100; // Convert to 0-1 range
+            updateAllVolumes();
+        });
+
+        effectsVolumeSlider.addEventListener('input', (event) => {
+            effectsVolume = event.target.value / 100; // Convert to 0-1 range
+            updateAllVolumes();
+        });
+
+        // Add event listener for the volume toggle button
+        volumeToggleButton.addEventListener('click', toggleVolumeControls);
+        
         // Initial setup on window load
         window.onload = () => {
             // Load theme from localStorage
@@ -759,6 +921,23 @@
                 setTheme('light');
             }
 
+            // Load volume controls visibility from localStorage
+            const savedVolumeControlsVisibility = localStorage.getItem('volumeControlsVisible');
+            if (savedVolumeControlsVisibility !== null) {
+                volumeControlsVisible = JSON.parse(savedVolumeControlsVisibility);
+                if (!volumeControlsVisible) {
+                    volumeControlsContainer.classList.add('hidden');
+                    volumeToggleButton.innerHTML = '<i class="fas fa-volume-mute"></i>'; // Update icon to mute
+                } else {
+                    volumeControlsContainer.classList.remove('hidden');
+                    volumeToggleButton.innerHTML = '<i class="fas fa-volume-up"></i>'; // Update icon to volume-up
+                }
+            } else {
+                // Default to visible if no preference is found
+                volumeControlsContainer.classList.remove('hidden');
+                volumeToggleButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+            }
+
             // Add event listener for theme toggle
             themeToggle.addEventListener('click', toggleTheme);
 
@@ -767,6 +946,9 @@
             for (let i = 0; i < numberOfBubbles; i++) {
                 createBubble();
             }
+
+            // Set initial volume display and apply to audio elements
+            updateAllVolumes();
         };
     </script>
 </body>
