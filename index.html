@@ -44,7 +44,7 @@
             --theme-toggle-color: #4B5563; /* Darker gray for light theme icon */
             --title-glow-color: rgba(59, 130, 246, 0.5); /* Blue glow for title in light theme */
             --border-glow-color: rgba(59, 130, 246, 0.5); /* Blue glow for border in light theme */
-            --bubble-color: rgba(173, 216, 230, 0.5); /* Light blue, increased transparency for light theme */
+            --bubble-color: rgba(173, 216, 230, 0.9); /* Light blue, increased transparency for light theme */
         }
 
         /* Dark Theme overrides (adapting previous dark theme with new accents) */
@@ -82,7 +82,7 @@
             --theme-toggle-color: #a0aec0; /* Lighter gray for dark theme icon */
             --title-glow-color: rgba(0, 170, 255, 0.5); /* Blue glow for title in dark theme */
             --border-glow-color: rgba(0, 170, 255, 0.5); /* Blue glow for border in dark theme */
-            --bubble-color: rgba(64, 164, 223, 0.4); /* Darker blue, increased transparency for dark theme */
+            --bubble-color: rgba(64, 164, 223, 0.7); /* Darker blue, increased transparency for dark theme */
         }
 
         /* Animations */
@@ -132,7 +132,7 @@
         @keyframes bubble-float {
             0% {
                 transform: translateY(0) translateX(0) scale(0.2);
-                opacity: 0.1;
+                opacity: 0.4; /* Increased starting opacity */
             }
             100% {
                 transform: translateY(-120vh) translateX(var(--bubble-drift)) scale(var(--bubble-scale));
@@ -158,7 +158,7 @@
             bottom: -10%; /* Start below the viewport */
             border-radius: 50%;
             background-color: var(--bubble-color);
-            filter: blur(2px); /* Soft blur effect */
+            filter: blur(1px); /* Slightly reduced blur effect */
             animation: bubble-float linear infinite;
         }
 
@@ -417,6 +417,11 @@
         <source src="wrong.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
+    <!-- New audio element for post-generation sound -->
+    <audio id="post-generate-sound">
+        <source src="generate_finish.mp3" type="audio/mpeg"> <!-- REPLACE with your desired sound file -->
+        Your browser does not support the audio element.
+    </audio>
 
     <!-- Bubble Container for background animation -->
     <div id="bubble-container" class="bubble-container"></div>
@@ -432,7 +437,6 @@
         <div class="score-display" id="score-display-element">Score: <span id="score">0</span> / Questions Answered: <span id="questions-answered">0</span></div>
 
         <div class="loading-spinner hidden" id="loading-spinner" aria-label="Loading new question"></div>
-        <!-- The question-language-info div is removed as per the snip -->
         <div class="question-box" id="question-text">Click 'Generate New Question' to start!</div>
 
         <div class="options-grid" id="options-container">
@@ -457,19 +461,19 @@
         const generateButton = document.getElementById('generate-question-button');
         const scoreDisplay = document.getElementById('score');
         const questionsAnsweredDisplay = document.getElementById('questions-answered');
-        // const questionLanguageInfo = document.getElementById('question-language-info'); // Removed
         const loadingSpinner = document.getElementById('loading-spinner');
         const themeToggle = document.getElementById('theme-toggle');
         const htmlElement = document.documentElement; // Get the root html element
         const scoreDisplayElement = document.getElementById('score-display-element');
         const bubbleContainer = document.getElementById('bubble-container');
 
-        // Get audio elements (updated paths)
+        // Get audio elements
         const backgroundMusic = document.getElementById('background-music');
         const clickSound = document.getElementById('click-sound');
         const generateQuestionSound = document.getElementById('generate-question-sound'); 
         const correctSound = document.getElementById('correct-sound');
         const wrongSound = document.getElementById('wrong-sound');
+        const postGenerateSound = document.getElementById('post-generate-sound'); // New audio element
 
         // Function to initialize audio (play background music)
         function initializeAudio() {
@@ -559,6 +563,9 @@
                 quizContainer.classList.remove('fade-out-in-container');
                 quizContainer.classList.add('fade-in-container');
 
+                // Play sound after question has been generated and displayed
+                playSound(postGenerateSound);
+
                 // Remove question-content-fade class after animation completes for next update
                 setTimeout(() => {
                     questionTextElement.classList.remove('question-content-fade');
@@ -616,7 +623,6 @@
             generateButton.textContent = 'Generating...';
 
             // Clear previous question and options for immediate feedback
-            // questionLanguageInfo.textContent = ''; // Removed
             questionTextElement.innerHTML = ''; // Clear content
             optionsContainer.innerHTML = '';
             feedbackElement.textContent = '';
@@ -699,7 +705,6 @@
                 feedbackElement.textContent = `Error generating question. Please try again. (${error.message})`;
                 feedbackElement.classList.add('incorrect');
                 questionTextElement.textContent = 'Could not generate question.';
-                // questionLanguageInfo.textContent = ''; // Removed
             } finally {
                 // Hide loading spinner and enable button
                 loadingSpinner.classList.add('hidden');
